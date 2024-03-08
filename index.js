@@ -7,7 +7,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.fsd9z3z.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -31,9 +31,15 @@ async function run() {
       res.send("Hello World!");
     });
 
-    // GET all product
+    // GET all products
     app.get("/products", async (req, res) => {
       const result = await productsCollection.find().toArray();
+      res.send(result);
+    });
+
+    // GET all orders
+    app.get("/orders", async (req, res) => {
+      const result = await ordersCollection.find().toArray();
       res.send(result);
     });
 
@@ -52,9 +58,9 @@ async function run() {
     });
 
     // DELETE a product
-    app.delete("/products/:id", async (req, res) => {
+    app.delete("/deleteProduct/:id", async (req, res) => {
       const productId = req.params.id;
-      const query = { _id: productId };
+      const query = { _id: new ObjectId(productId) };
       const result = await productsCollection.deleteOne(query);
       res.send(result);
     });
