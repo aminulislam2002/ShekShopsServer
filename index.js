@@ -24,6 +24,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     const database = client.db("ShekShops");
     const productsCollection = database.collection("products");
+    const ordersCollection = database.collection("orders");
 
     await client.connect();
     app.get("/", (req, res) => {
@@ -40,6 +41,13 @@ async function run() {
     app.post("/postProduct", async (req, res) => {
       const product = req.body;
       const result = await productsCollection.insertOne(product);
+      res.send(result);
+    });
+
+    // POST a order
+    app.post("/postOrder", async (req, res) => {
+      const product = req.body;
+      const result = await ordersCollection.insertOne(product);
       res.send(result);
     });
 
