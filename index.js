@@ -44,6 +44,12 @@ async function run() {
       res.send(result);
     });
 
+    // GET all users
+    app.get("/users", async (req, res) => {
+      const result = await usersCollection.find().toArray();
+      res.send(result);
+    });
+
     // POST a product
     app.post("/postProduct", async (req, res) => {
       const product = req.body;
