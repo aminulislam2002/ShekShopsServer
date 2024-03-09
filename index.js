@@ -25,6 +25,7 @@ async function run() {
     const database = client.db("ShekShops");
     const productsCollection = database.collection("products");
     const ordersCollection = database.collection("orders");
+    const usersCollection = database.collection("users");
 
     await client.connect();
     app.get("/", (req, res) => {
@@ -54,6 +55,13 @@ async function run() {
     app.post("/postOrder", async (req, res) => {
       const product = req.body;
       const result = await ordersCollection.insertOne(product);
+      res.send(result);
+    });
+
+    // POST an user
+    app.post("/postUser", async (req, res) => {
+      const product = req.body;
+      const result = await usersCollection.insertOne(product);
       res.send(result);
     });
 
