@@ -59,6 +59,7 @@ async function run() {
       res.send({ token });
     });
 
+    // Get admin by email
     app.get("/admin/:email", verifyJWT, async (req, res) => {
       const email = req.params.email;
 
@@ -72,6 +73,7 @@ async function run() {
       res.send(result);
     });
 
+    // Get customer by email
     app.get("/customer/:email", verifyJWT, async (req, res) => {
       const email = req.params.email;
 
@@ -88,6 +90,14 @@ async function run() {
     // GET all products
     app.get("/products", async (req, res) => {
       const result = await productsCollection.find().toArray();
+      res.send(result);
+    });
+
+    // Get a product by id
+    app.get("/product/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const result = await productsCollection.findOne(filter);
       res.send(result);
     });
 
@@ -117,7 +127,7 @@ async function run() {
       res.send(result);
     });
 
-    // // POST an user
+    // POST an user
     app.post("/postUser", async (req, res) => {
       const user = req.body;
       console.log(user);
@@ -128,6 +138,58 @@ async function run() {
       }
       const result = await usersCollection.insertOne(user);
       res.send(result);
+    });
+
+    // Update a product
+    app.patch("/updateProduct/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const filter = { _id: new ObjectId(id) };
+        const updateProductInfo = req.body;
+
+        // Extract the fields that need to be updated
+        const { name, description, category, productType, sizes, colors, originalPrice, offerPrice, ratings, reviews } =
+          updateProductInfo;
+
+        // Create an object to store only the fields that need to be updated
+        const updateFields = {};
+        if (name) updateFields.name = name;
+        if (description) updateFields.description = description;
+        if (category) updateFields.category = category;
+        if (productType) updateFields.productType = productType;
+        if (sizes) updateFields.sizes = sizes;
+        if (colors) updateFields.colors = colors;
+        if (originalPrice) updateFields.originalPrice = originalPrice;
+        if (offerPrice) updateFields.offerPrice = offerPrice;
+        if (ratings) updateFields.ratings = ratings;
+        if (reviews) updateFields.reviews = reviews;
+
+        // Check if images are provided in the request body
+        if (updateProductInfo.images && updateProductInfo.images.length > 0) {
+          updateFields.images = updateProductInfo.images;
+        }
+
+        // Check if colors are provided in the request body
+        if (updateProductInfo.colors && updateProductInfo.colors.length > 0) {
+          updateFields.colors = updateProductInfo.colors;
+        }
+
+        // Check if sizes are provided in the request body
+        if (updateProductInfo.sizes && updateProductInfo.sizes.length > 0) {
+          updateFields.sizes = updateProductInfo.sizes;
+        }
+
+        const updateDoc = {
+          $set: updateFields,
+        };
+
+        const result = await productsCollection.updateOne(filter, updateDoc);
+
+        res.send(result);
+      } catch (error) {
+        console.error("Error updating product:", error);
+        res.status(500).send("Internal Server Error");
+      }
     });
 
     // DELETE a product
