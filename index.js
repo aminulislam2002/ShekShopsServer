@@ -113,6 +113,20 @@ async function run() {
       res.send(result);
     });
 
+    // GET orders by email
+    app.get("/order", async (req, res) => {
+      try {
+        const email = req.query.email;
+        console.log(email);
+        const query = { "customerData.email": email };
+        const userOrders = await ordersCollection.find(query).toArray();
+        res.send(userOrders);
+      } catch (error) {
+        console.error("Error fetching user orders:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
+
     // POST a product
     app.post("/postProduct", async (req, res) => {
       const product = req.body;
