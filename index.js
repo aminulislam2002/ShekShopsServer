@@ -192,6 +192,29 @@ async function run() {
       }
     });
 
+    // Update order status
+    app.put("/orderStatus/:id", async (req, res) => {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      try {
+        const filter = { _id: new ObjectId(id) };
+        const updateDoc = { $set: { orderStatus: status } };
+
+        const result = await ordersCollection.updateOne(filter, updateDoc);
+
+        if (result.matchedCount === 0) {
+          // If no document matched the provided ID
+          return res.status(404).json({ message: "Order not found" });
+        }
+
+        res.status(200).json({ message: "Order status updated successfully" });
+      } catch (error) {
+        console.error("Error updating order status:", error);
+        res.status(500).json({ message: "Failed to update order status" });
+      }
+    });
+
     // DELETE a product
     app.delete("/deleteProduct/:id", async (req, res) => {
       const productId = req.params.id;
