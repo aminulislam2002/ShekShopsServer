@@ -47,6 +47,7 @@ async function run() {
     const productsCollection = database.collection("products");
     const ordersCollection = database.collection("orders");
     const usersCollection = database.collection("users");
+    const cartsCollection = database.collection("carts");
 
     app.get("/", (req, res) => {
       res.send("Hello World!");
@@ -131,6 +132,15 @@ async function run() {
     app.post("/postProduct", async (req, res) => {
       const product = req.body;
       const result = await productsCollection.insertOne(product);
+      res.send(result);
+    });
+
+    // POST a product
+    app.post("/postCartProduct", async (req, res) => {
+      const product = req.body;
+      console.log(product);
+      const result = await cartsCollection.insertOne(product);
+      console.log(result);
       res.send(result);
     });
 
