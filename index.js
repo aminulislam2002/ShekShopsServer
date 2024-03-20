@@ -128,6 +128,20 @@ async function run() {
       }
     });
 
+    // GET cart products by email
+    app.get("/cartProducts", async (req, res) => {
+      try {
+        const email = req.query.email;
+        console.log(email);
+        const query = { "customerEmail": email };
+        const userCartProducts = await cartsCollection.find(query).toArray();
+        res.send(userCartProducts);
+      } catch (error) {
+        console.error("Error fetching user orders:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
+
     // POST a product
     app.post("/postProduct", async (req, res) => {
       const product = req.body;
@@ -135,7 +149,7 @@ async function run() {
       res.send(result);
     });
 
-    // POST a product
+    // POST a product to cart
     app.post("/postCartProduct", async (req, res) => {
       const product = req.body;
       console.log(product);
@@ -239,11 +253,19 @@ async function run() {
       }
     });
 
-    // DELETE a product
+    // DELETE a product from productsCollection
     app.delete("/deleteProduct/:id", async (req, res) => {
       const productId = req.params.id;
       const query = { _id: new ObjectId(productId) };
       const result = await productsCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // DELETE a product from cartsCollection
+    app.delete("/deleteProductFromCart/:id", async (req, res) => {
+      const productId = req.params.id;
+      const query = { _id: new ObjectId(productId) };
+      const result = await cartsCollection.deleteOne(query);
       res.send(result);
     });
 
