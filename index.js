@@ -133,7 +133,7 @@ async function run() {
       try {
         const email = req.query.email;
         console.log(email);
-        const query = { "customerEmail": email };
+        const query = { customerEmail: email };
         const userCartProducts = await cartsCollection.find(query).toArray();
         res.send(userCartProducts);
       } catch (error) {
@@ -216,6 +216,9 @@ async function run() {
         if (updateProductInfo.sizes && updateProductInfo.sizes.length > 0) {
           updateFields.sizes = updateProductInfo.sizes;
         }
+
+        // Remove createdAt field from updateFields to prevent it from being updated
+        updateFields.createdAt = new Date().toISOString();
 
         const updateDoc = {
           $set: updateFields,
